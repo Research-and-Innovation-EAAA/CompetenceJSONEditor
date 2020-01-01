@@ -1,0 +1,77 @@
+root {
+    --jumbotron-padding-y: 1rem;
+}
+col-md-4 {
+    position: relative;
+    display: flex;
+
+}
+
+.jsoneditor-div{
+    width: 65%;
+    height: 100%;
+}
+.container{
+
+}
+.alert{
+    display: none;
+}
+.jsondiv:hover .jsonbutton {
+    color: white !important;
+    border: 2px solid white !important;
+}
+.list-group-item{
+    background-color: #3883fa !important;
+}
+.jsonbutton{
+    float:right;
+}
+.jsondiv{
+    overflow: auto;
+}
+.jumbotron text-center{
+    width: 50%;
+    height: 100%;
+}
+btn-primary btn-sm
+{
+
+}
+btn-group{
+    position: absolute;
+
+}
+#right-panel-link {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+p {
+    width: 100%;
+    font-family: "DejaVu Sans", sans-serif;
+}
+.right-menu a{
+    line-height:20px;
+    margin:5px 0;
+}
+.item-menu{
+    margin:5px 0;
+    border:solid 1px #999;
+    /*height:30px;*/
+    padding:5px 5px 10px 10px;
+}
+.btn-edit{
+    margin-left: 10%;
+}
+footer{
+    margin-top: 50px;
+    border-top: 1px solid #CCC;
+    color: #AAA;
+}
+.title h5{
+    color: #AAA;
+    font-weight: 100;
+
+}
