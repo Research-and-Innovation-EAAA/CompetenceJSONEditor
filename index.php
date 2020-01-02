@@ -1,11 +1,7 @@
 <?php
 $json="";
 $row="";
-$host = "ENTER DATABASE IP OR DOMAIN NAME";
-$user = "ENTER DATABASE USER";
-$password = "ENTER DATABASE PASSWORD";
-$db = "ENTER DATABASE PASSWORD";
-$port = "ENTER DATABASE PORT";
+require 'credentials.php';
 $language ="da";
 #/*Connecting to the database and loading competences*/
 $connect=new mysqli($host,$user,$password,$db,$port,$language) or die("failed" . mysqli_error());## for getting the JSON
