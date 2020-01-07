@@ -3,18 +3,17 @@ $json="";
 $row="";
 require 'credentials.php';
 $language ="da";
-#/*Connecting to the database and loading competences*/
-$connect=new mysqli($host,$user,$password,$db,$port,$language) or die("failed" . mysqli_error());## for getting the JSON
+
 #Connecting to the database and loading competences ------------------------------------------------------------
-$connect = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());  ###for updating the JSON
+$connect = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());
 #changing character set to utf8
-mysqli_character_set_name($connect);
-if (!mysqli_set_charset($connect, "utf8mb4")) {
+mysqli_character_set_name($connect);#Returns the character set for the database connection
+if (!mysqli_set_charset($connect, "utf8mb4")) { //Checking if the character set is set to UTF-8 if it is false it will show printf
     printf("Error loading character set utf8: %s\n", mysqli_error($connect));
     exit();
 }
 $sql = mysqli_query($connect, "select shinyTreeJSON from global where _id = 1");
-$row = mysqli_fetch_array($sql);
+$row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetched row in this case the result from the query
 
 
 #Save competence and full json -----------------------------------------------------------------------------------
@@ -102,7 +101,7 @@ if (isset($_POST['service'])) {
 <script>
     // create the editor ------------------------------------------------------------------------------------------------
     $(document).ready(function () {
-        $('.treeview-animated').mdbTreeview(); //initializing the list with the competences
+        $('.treeview-animated').mdbTreeview(); //initializing the treeview for the list with the competences
     });
     const container = document.getElementById('jsoneditor');
     const options = {
@@ -122,8 +121,8 @@ if (isset($_POST['service'])) {
     const editor = new JSONEditor(container, options);
 
     //creating variables for making a list, loading and saving json ------------------------------------------------
-    var myjson = {};
-    var jsorbj = <?php echo $row[0] ?> ;
+    var myjson = {}; //Creating an empty object which is used later on
+    var jsorbj = <?php echo $row[0] ?> ; //creating a variable jsorobj and assigning a value the converted object from php to javascript
     //console.log(typeof jsorbj);
     var editorstate = 0;              // hiding the save buttons
    // console.log(typeof editorstate);
@@ -142,8 +141,8 @@ if (isset($_POST['service'])) {
             if (typeof jsonObject[i] === 'string') {  //Checking if the object type is equal to string.
 
             }
-            else if ((jsonObject[i] instanceof Object) && (jsonObject[i]["text"] !== undefined)) {         // Checking if it is an object and if it has the “text” property
-                 if ((jsonObject[i]["children"] !== undefined) && (jsonObject[i]["children"].length !== 0)) {           //making the HTML if the competence has children (Checking if "children" is not equal to undefined and "children" length is not equal to 0
+            else if ((jsonObject[i] instanceof Object) && (jsonObject[i]["text"] !== undefined)) {  // Checking if it is an object and if it has the “text” property
+                 if ((jsonObject[i]["children"] !== undefined) && (jsonObject[i]["children"].length !== 0)) { //making the HTML if the competence has children (Checking if "children" is not equal to undefined and "children" length is not equal to 0
                     newLi = document.createElement('li');
                     newLi.className = "treeview-animated-items"; // creating new Li object with a property class name and assigning a value "treeview-animated-items"
                     listElement.appendChild(newLi);
@@ -151,7 +150,7 @@ if (isset($_POST['service'])) {
                     newdiv = document.createElement('div');
                     newdiv.className = "jsondiv";
                     newa.className = "closed";
-                    json = jsonObject[i];
+                    json = jsonObject[i];//Renaming the variable for readability
                     button = document.createElement('button');
                     button.innerText = "Edit";
                     button.type = "button";
@@ -163,10 +162,10 @@ if (isset($_POST['service'])) {
                     }(json)), false);
                     newdiv.innerHTML = jsonObject[i]["text"];  // Accessing the text of the key of the object
                     newdiv.appendChild(button);
-                    newa.appendChild(newdiv);+-
+                    newa.appendChild(newdiv);
                     newLi.appendChild(newa);
 
-                    var newUL = newLi.appendChild(document.createElement('ul'));
+                    var newUL = newLi.appendChild(document.createElement('ul'));//Creating a newUL for the children
                     newUL.className = "nested";
 
                 }
@@ -185,7 +184,7 @@ if (isset($_POST['service'])) {
                             loadjsonpart(inner_json);
                         }
                     }(json)), false);
-                    newdiv.innerHTML = jsonObject[i]["text"];
+                    newdiv.innerHTML = jsonObject[i]["text"]; // Setting the innerHTML property of the div element to the current element of the string of the jsonObject
                     newdiv.appendChild(button);
                     newLi.appendChild(newdiv);
                     newLi.appendChild(newdiv);
@@ -205,12 +204,12 @@ if (isset($_POST['service'])) {
     //Adding functionality to the buttons ------------------------------------------------------------------------
     //save part of json
     document.getElementById('SaveCompetence').onclick = function () {
-        var editedjson = JSON.stringify(editor.get());               //converts the value to a JSON string
-        var oldjson = JSON.stringify(myjson);
-        var originaljson = JSON.stringify(jsorbj);
-        var sendingjson = originaljson.replace(oldjson, editedjson);
+        var editedjson = JSON.stringify(editor.get()); //Taking the edited json from the editor and converting it to a string(The one that is edited after pressing the edit button)
+        var oldjson = JSON.stringify(myjson);//Taking the old JSON before any changes and making it string (The old json is the one that is loaded when we press the edit button)
+        var originaljson = JSON.stringify(jsorbj);//Converting the value of the variable  jsorbj  to a string(Originaljson-the one that is passed from php to JS)
+        var sendingjson = originaljson.replace(oldjson, editedjson);// Searching for the oldjson inside the originaljson and replacing it with the editedjson
 
-        sendingjson = JSON.parse(sendingjson);
+        sendingjson = JSON.parse(sendingjson);                      //JSON.parse-Converting the sendingjson string  to Javascript object
         $.ajax({                                                                    //Converting the object from Javascript to PHP
             type: 'post',
             url: 'index.php',
@@ -229,7 +228,7 @@ if (isset($_POST['service'])) {
     // load json
     document.getElementById('LoadJson').onclick = function () {
         //editor.set(json)
-        editor.set(<?php echo $row[0] ?>);
+        editor.set(<?php echo $row[0] ?>); //Setting the json in the editor to be the one that is send from php to javascript
         editorstate = 1;
         showbutton(editorstate);
     };
@@ -253,11 +252,11 @@ if (isset($_POST['service'])) {
     };
 
     //Helper function ------------------------------------------------------------------------------------------------
-    function loadjsonpart(json) {
-        editor.set(json);
-        myjson = json;
+    function loadjsonpart(json) { //Creating a function loadjsonpart with parameter  json
+        editor.set(json);//Setting the editor parameter to the value of the json(meaning that when the edit button is pressed it loads the part of the json)
+        myjson = json;//Creating a myjson variable and assigning to it to the value of the json (the part loaded in the editor after pressing the edit button)
         editorstate = 2;
-        showbutton(editorstate);
+        showbutton(editorstate);//Calling the showbutton function and passing the editorstate parameter
     }
     function showbutton(state){
 
