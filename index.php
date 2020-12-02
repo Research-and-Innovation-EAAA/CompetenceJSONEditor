@@ -64,8 +64,8 @@ if (isset($_POST['service'])) {
 </div>
 <br>
 
-<div class="container">
-<ul class="nav nav-pills nav-fill justify-content-right" id="myTab" role="tablist">
+<div class="text-center title container">
+<ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
   <li class="nav-item">
     <a class="nav-link active" id="tree-tab" data-toggle="tab" href="#tree" role="tab" aria-controls="tree"
       aria-selected="true">Tree</a>
@@ -76,11 +76,8 @@ if (isset($_POST['service'])) {
   </li>
 </ul>
 
-<br/>
-<hr/>
-<br/>
-
-<div class="tab-content" id="myTabContent">
+<div class="tab-content container border-left border-bottom border-right" id="myTabContent">
+  <br/>
   <div class="tab-pane fade show active" id="tree" role="tabpanel" aria-labelledby="tree-tab">
 
     <div class="alert alert-success alert-dismissable" id="successalert"></div>
