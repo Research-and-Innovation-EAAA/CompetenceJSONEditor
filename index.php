@@ -60,42 +60,78 @@ if (isset($_POST['service'])) {
 <body>
 <div class="jumbotron text-center title">
     <h4>Competence Administration tool</h4>
-    <h5 class="text-muted">Research and innovation at Business Academy Aarhus maintain a database with competences. Below you will find a tool that allows you to administrate the competences. Save is needed after every competence change.</h5>
-    <div>
-        <button type="button" class="btn btn-primary" id="LoadJson">Load full json</button>
-    </div>
+    <h5 class="text-muted">Research and innovation at Business Academy Aarhus maintain a database with competences.<br/>Below you will find a tool that allows you to administrate the competences and their categorization.</h5>
 </div>
 <br>
 
-<div>
-    <div class="container">
-        <div class="alert alert-success alert-dismissable" id="successalert"></div>
-        <div class="alert alert-danger alert-dismissable" id="dangeralert"></div>
-        <div class="row">
-            <div class="col-sm-4">
-                <h2 class="list-group-item list-group-item-action active">Select Competence to Edit</h2>
-                <div class="right-menu">
+<div class="container">
+<ul class="nav nav-pills nav-fill justify-content-right" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="tree-tab" data-toggle="tab" href="#tree" role="tab" aria-controls="tree"
+      aria-selected="true">Tree</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab" aria-controls="categories"
+      aria-selected="false">Categories</a>
+  </li>
+</ul>
 
-                    <div class="treeview-animated">
-                        <ul id="CompetenceList" class="treeview-animated-list mb-3">
-                        </ul>
-                    </div>
+<br/>
+<hr/>
+<br/>
+
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="tree" role="tabpanel" aria-labelledby="tree-tab">
+
+    <div class="alert alert-success alert-dismissable" id="successalert"></div>
+    <div class="alert alert-danger alert-dismissable" id="dangeralert"></div>
+    <div class="row">
+      <div class="col-sm-4">
+        <button type="button" class="btn btn-block btn-lg btn-primary" id="LoadJson">Load from database</button>
+	<div class="right-menu">
+
+	  <div class="treeview-animated">
+	    <ul id="CompetenceList" class="treeview-animated-list mb-3">
+	    </ul>
+	  </div>
 
 
-                </div>
-            </div>
-            <br>
-            <div class="jsoneditor-div">
-                <div id="jsoneditor"></div>
-                <button type="button" class="btn btn-success" id="SaveCompetence">Save</button>
-                <button type="button" class="btn btn-success" id="SaveJson">Save</button>
+	</div>
+      </div>
+      <br>
+      <div class="jsoneditor-div">
+	<div id="jsoneditor"></div>
+	<button type="button" class="btn btn-success" id="SaveCompetence">Save to database</button>
+	<button type="button" class="btn btn-success" id="SaveJson">Save to database</button>
+      </div>
 
-            </div>
+    </div>
+  </div>
+  <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
+      Select Excel document to update competence category content:
+      <form action="upload.php" method="post" enctype="multipart/form-data">
+	<div class="input-group">
+	  <div class="input-group-prepend">
+	    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+	  </div>
+	  <div class="custom-file">
+	    <input type="file" class="custom-file-input" id="inputGroupFile01"
+		   aria-describedby="inputGroupFileAddon01">
+	    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+	  </div>
+	  
+	</div>
+	<!-- Sign in button -->
+	<button class="btn btn-block btn-success my-4" type="submit">Update database by file</button>
+      </form>
+  </div>
+</div>
+</div>
 
-        </div>
-        <footer>
-            <p>Copyright &copy; 2019 Research and Innovation, Business Academy Aarhus</p>
-        </footer>
+
+    <footer>
+      <p>Copyright &copy; 2019 Research and Innovation, Business Academy Aarhus</p>
+    </footer>
 
 </body>
 <script>
