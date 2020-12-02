@@ -80,11 +80,10 @@ if (isset($_POST['service'])) {
   <br/>
   <div class="tab-pane fade show active" id="tree" role="tabpanel" aria-labelledby="tree-tab">
 
-    <div class="alert alert-success alert-dismissable" id="successalert"></div>
-    <div class="alert alert-danger alert-dismissable" id="dangeralert"></div>
     <div class="row">
       <div class="col-sm-4">
-        <button type="button" class="btn btn-block btn-lg btn-primary" id="LoadJson">Load from database</button>
+          <button type="button" class="btn btn-block btn-lg btn-warning" id="LoadJson">Load from database</button>
+	<br/>
 	<div class="right-menu">
 
 	  <div class="treeview-animated">
@@ -97,9 +96,12 @@ if (isset($_POST['service'])) {
       </div>
       <br>
       <div class="jsoneditor-div">
-	<div id="jsoneditor"></div>
-	<button type="button" class="btn btn-success" id="SaveCompetence">Save to database</button>
-	<button type="button" class="btn btn-success" id="SaveJson">Save to database</button>
+	<div class="container">
+	  <div id="jsoneditor"></div>
+	  <br/>
+	  <button type="button" class="btn btn-block btn-danger" id="SaveCompetence">Save to database</button>
+	  <button type="button" class="btn btn-block btn-danger" id="SaveJson">Save to database</button>
+	</div>
       </div>
 
     </div>
@@ -119,7 +121,7 @@ if (isset($_POST['service'])) {
 	  
 	</div>
 	<!-- Sign in button -->
-	<button class="btn btn-block btn-success my-4" type="submit">Update database by file</button>
+	<button class="btn btn-danger my-4" type="submit">Update database by file</button>
       </form>
   </div>
 </div>
@@ -127,7 +129,7 @@ if (isset($_POST['service'])) {
 
 
     <footer>
-      <p>Copyright &copy; 2019 Research and Innovation, Business Academy Aarhus</p>
+      <div class="container">Copyright &copy; 2019 Research and Innovation, Business Academy Aarhus</div>
     </footer>
 
 </body>
