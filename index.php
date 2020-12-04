@@ -108,20 +108,20 @@ if (isset($_POST['service'])) {
   </div>
   <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
       Select Excel document to update competence category content:
-      <form action="upload.php" method="post" enctype="multipart/form-data">
+      <form action="uploadCategories.php" method="post" enctype="multipart/form-data">
 	<div class="input-group">
 	  <div class="input-group-prepend">
-	    <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
+	    <span class="input-group-text" id="competenceCategoriesFile">Upload</span>
 	  </div>
 	  <div class="custom-file">
-	    <input type="file" class="custom-file-input" id="inputGroupFile01"
-		   aria-describedby="inputGroupFileAddon01">
-	    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+	    <input type="file" class="custom-file-input" id="competenceCategoriesFile" name="competenceCategoriesFile"
+		   aria-describedby="competenceCategoriesFile">
+	    <label class="custom-file-label" for="competenceCategoriesFile">Choose file</label>
 	  </div>
 	  
 	</div>
 	<!-- Sign in button -->
-	<button class="btn btn-danger my-4" type="submit">Update database by file</button>
+	<button class="btn btn-danger my-4" type="submit" name="submit">Update database by file</button>
       </form>
   </div>
 </div>
