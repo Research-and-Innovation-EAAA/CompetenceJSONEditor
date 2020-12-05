@@ -64,46 +64,46 @@ $creationDatestamp = $spreadsheet->getProperties()->getCreated();
 // Format the date and time using the standard PHP date() function
 $creationDate = date('l, d<\s\up>S</\s\up> F Y', $creationDatestamp);
 $creationTime = date('g:i A', $creationDatestamp);
-echo('<b>Created On: </b>' . $creationDate . ' at ' . $creationTime);
+echo('<p><b>Created On: </b>' . $creationDate . ' at ' . $creationTime.'</p>');
 
 // Read the name of the last person to modify this workbook
 $modifiedBy = $spreadsheet->getProperties()->getLastModifiedBy();
-echo('<b>Last Modified By: </b>' . $modifiedBy);
+echo('<p><b>Last Modified By: </b>' . $modifiedBy.'</p>');
 
 // Read the Date when the workbook was last modified (as a PHP timestamp value)
 $modifiedDatestamp = $spreadsheet->getProperties()->getModified();
 // Format the date and time using the standard PHP date() function
 $modifiedDate = date('l, d<\s\up>S</\s\up> F Y', $modifiedDatestamp);
 $modifiedTime = date('g:i A', $modifiedDatestamp);
-echo('<b>Last Modified On: </b>' . $modifiedDate . ' at ' . $modifiedTime);
+echo('<p><b>Last Modified On: </b>' . $modifiedDate . ' at ' . $modifiedTime.'</p>');
 
 // Read the workbook title property
 $workbookTitle = $spreadsheet->getProperties()->getTitle();
-echo('<b>Title: </b>' . $workbookTitle);
+echo('<p><b>Title: </b>' . $workbookTitle.'</p>');
 
 // Read the workbook description property
 $description = $spreadsheet->getProperties()->getDescription();
-echo('<b>Description: </b>' . $description);
+echo('<p><b>Description: </b>' . $description.'</p>');
 
 // Read the workbook subject property
 $subject = $spreadsheet->getProperties()->getSubject();
-echo('<b>Subject: </b>' . $subject);
+echo('<p><b>Subject: </b>' . $subject.'</p>');
 
 // Read the workbook keywords property
 $keywords = $spreadsheet->getProperties()->getKeywords();
-echo('<b>Keywords: </b>' . $keywords);
+echo('<p><b>Keywords: </b>' . $keywords.'</p>');
 
 // Read the workbook category property
 $category = $spreadsheet->getProperties()->getCategory();
-echo('<b>Category: </b>' . $category);
+echo('<p><b>Category: </b>' . $category.'</p>');
 
 // Read the workbook company property
 $company = $spreadsheet->getProperties()->getCompany();
-echo('<b>Company: </b>' . $company);
+echo('<p><b>Company: </b>' . $company.'</p>');
 
 // Read the workbook manager property
 $manager = $spreadsheet->getProperties()->getManager();
-echo('<b>Manager: </b>' . $manager);
+echo('<p><b>Manager: </b>' . $manager.'</p>');
 $s = new \PhpOffice\PhpSpreadsheet\Helper\Sample();
 
 // Output sheet data
@@ -115,21 +115,15 @@ $mysqli = new mysqli($host, $user, $password, $db, $port, $language) or die("fai
 #changing character set to utf8
 $charset = $mysqli->character_set_name();#Returns the character set for the database connection
 if (!$mysqli->set_charset("utf8mb4")) { //Checking if the character set is set to UTF-8 if it is false it will show printf
-    printf("Error loading character set utf8: %s\n", $mysqli->error());
+    printf("<p>Error loading character set utf8: %s </p>\n", $mysqli->error());
     exit();
 }
 $mysqli->autocommit(true);
 
 // Database query
 function dbExecuteDML($mysqli, $sqlQuery) {
-    echo('<br/>'.$sqlQuery);
+    echo('<p>'.$sqlQuery.'</p>');
     $result = $mysqli->query($sqlQuery);
-    // if ($mysqli->warning_count()) {
-    //    $e = $mysqli->get_warnings();
-    //    do {
-    //    	  echo "Warning: $e->errno, $e->message\n";
-    //    } while ($e->next());
-    // }
     if (!$result) {
        printf("Result: %d, Error: %d, %s, %s", $result, $mysqli->errno(), $mysqli->error(), $mysqli->sqlstate());
        die("DB error '".$result."' while running '".$sqlQuery."'");
@@ -137,20 +131,52 @@ function dbExecuteDML($mysqli, $sqlQuery) {
 }
 
 // Store in database
+$i = 0;
 foreach ($sheetData as $row) {
-    $labels = $row["A"];
-    list($prefferredLabel, $altLabels) = explode('/', $labels, 2);
-    $parent = $row["B"];
-    $subConceptUri = $parent.'-'.$prefferredLabel;
+    echo "<p>";
+    print_r($row);
+    echo "</p>";
 
-    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$prefferredLabel.'","'.$altLabels.'","'.$subConceptUri.'","")');
+    $childLabels = $row["A"];
+    list($childLabel, $childAltLabels) = explode('/', $childLabels, 2);
+    $connection = $row["B"];
+    $parentLabel = $row["C"];
+    $parentGrp = $row["D"];
+    $childConceptUri = $parentLabel.'-'.$childLabel;
 
-    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$parent.'","","'.$parent.'","")');
+    $i++;
+    if ($i==1) {
+        if ($childLabels != "childLabels" ||
+            $connection != "connection" ||
+            $parentLabel != "parentLabel" ||
+            $parentGrp != "parentGrp") {
+            echo "<p>Bad header names in line 1</p>";
+            exit;
+        }
+        continue;
+    } 
 
-    dbExecuteDML($mysqli, 'insert ignore into kompetence_kategorisering (superkompetence, subkompetence) select sup.conceptUri superkompetence, sub.conceptUri subkompetence from kompetence sup JOIN kompetence sub ON sup.prefferredLabel="'.$parent.'" AND sub.prefferredLabel="'.$prefferredLabel.'" ');    		      	 
+    if ($connection != "Added" && $connection != "Removed") {
+        echo "<p>Bad value in connection column</p>";
+        exit;
+    }
 
-    // echo ($prefferredLabel." ".$altLabels." ".$parent."<br/>");
+    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$childLabel.'","'.$childAltLabels.'","'.$childConceptUri.'","")');
+
+    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$parentLabel.'","","'.$parentLabel.'","'.$parentGrp.'")');
+
+    if ($connection == "Added") {
+        dbExecuteDML($mysqli, 'insert ignore into kompetence_kategorisering (superkompetence, subkompetence) select sup.conceptUri superkompetence, sub.conceptUri subkompetence from kompetence sup JOIN kompetence sub ON sup.prefferredLabel="'.$parentLabel.'" AND sub.prefferredLabel="'.$childLabel.'" ');    		      	 
+    } else if ($connection == "Removed") {
+        dbExecuteDML($mysqli, 'delete ignore from kompetence_kategorisering where superkompetence in (select sup.conceptUri superkompetence from kompetence sup WHERE sup.prefferredLabel="'.$parentLabel.'") AND subkompetence in (select sub.conceptUri subkompetence from kompetence sub where sub.prefferredLabel="'.$childLabel.'")');    		      	 
+    }
 }
 
 $mysqli->close();
+
+echo "<p><b>Success, database updated</b></p>";
+
+
 ?>
+
+<a href="index.php">Go back</a>
