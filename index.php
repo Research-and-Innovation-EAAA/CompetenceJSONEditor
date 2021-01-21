@@ -141,9 +141,14 @@ if (isset($_POST['service'])) {
 </div>
 
 
-    <footer>
-      <div class="container">Copyright &copy; 2019 Research and Innovation, Business Academy Aarhus</div>
-    </footer>
+<footer>
+	<div class="container">
+	     <?php 
+	     echo "Copyright &copy; ".date("Y").
+		  "<br/>Research and Innovation, Business Academy Aarhus"; 
+	     ?>
+	</div>
+</footer>
 
 </body>
 <script>
