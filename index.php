@@ -59,7 +59,7 @@ if (isset($_POST['service'])) {
 
 <body>
 <div class="jumbotron text-center title">
-    <h4>Competence Administration tool</h4>
+    <h1>Competence administration tool</h1>
     <h5 class="text-muted">Research and innovation at Business Academy Aarhus maintain a database with competences.<br/>Below you will find a tool that allows you to administrate the competences and their categorization.</h5>
 </div>
 <br>
@@ -73,6 +73,10 @@ if (isset($_POST['service'])) {
   <li class="nav-item">
     <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab" aria-controls="categories"
       aria-selected="false">Categories</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="competencies-tab" data-toggle="tab" href="#competencies" role="tab" aria-controls="competencies"
+      aria-selected="false">Competencies</a>
   </li>
 </ul>
 
@@ -136,6 +140,61 @@ if (isset($_POST['service'])) {
 	<!-- Upload Excel file and update competences and categories -->
 	<button class="btn btn-danger btn-block my-4" type="submit" name="submit">Update database by Excel file</button>
       </form>
+  </div>
+  <div class="tab-pane fade" id="competencies" role="tabpanel" aria-labelledby="competencies-tab">
+        <br/>
+	<h4>Load competence</h4>
+
+	      <form action="downloadCategories.php" method="get" enctype="multipart/form-data" style="text-align: left">
+	      	    <div class="form-group row">
+		    	 <label class="col-form-label col-sm-3" for="preferredLabel">Label</label>
+			 <div class="col-sm-9">
+			      <input type="preferredLabel" class="form-control" id="preferredLabel">
+			 </div>
+		    </div>
+	      	    <div class="form-group row">
+		    <div class="btn-group container">
+	      	       <button class="btn  btn-warning" type="submit" name="findcompetence">Find existing</button>
+    		       <button class="btn  btn-warning" type="submit" name="createcompetence">Create new</button>
+                    </div>
+		    </div>
+	      </form>
+
+
+        <br/>
+        <br/>
+	      <hr/>
+
+        <br/>
+        <br/>
+	<h4>Update competence</h4>
+
+      <form action="alterCompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="preferredLabel">Label</label>
+	     <div class="col-sm-9">
+	     	  <input type="preferredLabel" class="form-control" id="preferredLabel">
+	     </div>
+	</div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="altLabels">Alternatives ( divide by / )</label>
+	     <div class="col-sm-9">
+	     	  <input type="altLabels" class="form-control" id="altLabels">
+	     </div>
+	</div>
+	      	    <div class="form-group row">
+		    <div class="btn-group container">
+	<button class="btn btn-danger" type="submit" name="update">Update competence</button>
+	<button class="btn btn-danger" type="submit" name="update">Delete competence</button>
+                    </div>
+		    </div>
+      </form>
+
+      <!-- 
+          SET @user := 123456;
+      	  SELECT @group := `group` FROM user WHERE user = @user;
+	  SELECT * FROM user WHERE `group` = @group;
+       -->
   </div>
 </div>
 </div>
