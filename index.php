@@ -16,19 +16,6 @@ $sql = mysqli_query($connect, "select shinyTreeJSON from global where _id = 1");
 $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetched row in this case the result from the query
 
 
-#Save competence and full json -----------------------------------------------------------------------------------
-if (isset($_POST['service'])) {
-    #JSON_UNESCAPED_UNICODE for danish letters
-    $json = json_encode($_POST['service'], JSON_UNESCAPED_UNICODE);
-    $connect = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());
-    #/*changing character set to utf8 */OK
-    mysqli_character_set_name($connect);
-    if (!mysqli_set_charset($connect, "utf8mb4")) {
-        printf("Error loading character set utf8: %s\n", mysqli_error($connect));
-        exit();
-    }
-    $sql = mysqli_query($connect, "update global set shinyTreeJSON= '$json'  where _id = 1");
-}
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -68,7 +55,7 @@ if (isset($_POST['service'])) {
 <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
   <li class="nav-item">
     <a class="nav-link active" id="tree-tab" data-toggle="tab" href="#tree" role="tab" aria-controls="tree"
-      aria-selected="true">Tree</a>
+      aria-selected="false">Tree</a>
   </li>
   <li class="nav-item">
     <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab" aria-controls="categories"
@@ -76,12 +63,16 @@ if (isset($_POST['service'])) {
   </li>
   <li class="nav-item">
     <a class="nav-link" id="competencies-tab" data-toggle="tab" href="#competencies" role="tab" aria-controls="competencies"
-      aria-selected="false">Competencies</a>
+      aria-selected="true">Competencies</a>
   </li>
 </ul>
 
 <div class="tab-content container border-left border-bottom border-right" id="myTabContent">
   <br/>
+  <form id="StoreJSONform" name="StoreJSON" id="StoreJSONform" method="post" action="StoreJSON.php" style="display:none;">
+      <input id="newJSONinput" name="newJSON" />
+      <button type="submit" id="StoreJSONformSubmit" name="StoreJSONformSubmit">Update JSON tree in database</button>
+  </form>
   <div class="tab-pane fade show active" id="tree" role="tabpanel" aria-labelledby="tree-tab">
 
     <div class="row">
@@ -103,7 +94,6 @@ if (isset($_POST['service'])) {
 	<div class="container">
 	  <div id="jsoneditor"></div>
 	  <br/>
-	  <button type="button" class="btn btn-block btn-danger" id="SaveCompetence">Save to database</button>
 	  <button type="button" class="btn btn-block btn-danger" id="SaveJson">Save to database</button>
 	</div>
       </div>
@@ -145,49 +135,64 @@ if (isset($_POST['service'])) {
         <br/>
 	<h4>Load competence</h4>
 
-	      <form action="downloadCategories.php" method="get" enctype="multipart/form-data" style="text-align: left">
+	      <form id="loadcompetenceform" action="manipulatecompetence.php" method="post" enctype="multipart/form-data" style="text-align: left">
 	      	    <div class="form-group row">
 		    	 <label class="col-form-label col-sm-3" for="preferredLabel">Label</label>
 			 <div class="col-sm-9">
-			      <input type="preferredLabel" class="form-control" id="preferredLabel">
+			      <input type="text" class="form-control" name="preferredLabel">
 			 </div>
 		    </div>
 	      	    <div class="form-group row">
 		    <div class="btn-group container">
-	      	       <button class="btn  btn-warning" type="submit" name="findcompetence">Find existing</button>
-    		       <button class="btn  btn-warning" type="submit" name="createcompetence">Create new</button>
+	      	       <button class="btn  btn-warning" type="submit" name="findcompetence" id="loadcompetenceformfindcompetence" style="margin: 0 6px 0 0;">Find existing</button>
+    		       <button class="btn  btn-warning" type="submit" name="createcompetence" style="margin: 0 0 0 6px;">Create new</button>
                     </div>
 		    </div>
 	      </form>
+	      
+        <br/>
+
 
 
         <br/>
-        <br/>
+
 	      <hr/>
 
         <br/>
         <br/>
 	<h4>Update competence</h4>
 
-      <form action="alterCompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
+      <form id="updatecompetenceform" action="manipulatecompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
       	<div class="form-group row">
 	     <label class="col-form-label col-sm-3" for="preferredLabel">Label</label>
 	     <div class="col-sm-9">
-	     	  <input type="preferredLabel" class="form-control" id="preferredLabel">
+	     	  <input type="text" class="form-control" name="preferredLabel">
 	     </div>
 	</div>
       	<div class="form-group row">
-	     <label class="col-form-label col-sm-3" for="altLabels">Alternatives ( divide by / )</label>
+	     <label class="col-form-label col-sm-3" for="altLabels">Alternatives ( split by / )</label>
 	     <div class="col-sm-9">
-	     	  <input type="altLabels" class="form-control" id="altLabels">
+	     	  <input type="text" class="form-control" id="altLabels" name="altLabels">
 	     </div>
 	</div>
-	      	    <div class="form-group row">
-		    <div class="btn-group container">
-	<button class="btn btn-danger" type="submit" name="update">Update competence</button>
-	<button class="btn btn-danger" type="submit" name="update">Delete competence</button>
-                    </div>
-		    </div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="grp">Group</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" id="grp" name="grp">
+	     </div>
+	</div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="overriddenSearchPatterns">Search pattern</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" id="overriddenSearchPatterns" name="overriddenSearchPatterns">
+	     </div>
+	</div>
+	<div class="form-group row">
+	     <div class="btn-group container">
+	     	  <button class="btn btn-danger" type="submit" name="updatecompetence" style="margin: 0 6px 0 0;">Update competence</button>
+		  <button class="btn btn-danger" type="submit" name="deletecompetence" style="margin: 0 0 0 6px;">Delete competence</button>
+             </div>
+	</div>
       </form>
 
       <!-- 
@@ -239,7 +244,6 @@ if (isset($_POST['service'])) {
     var editorstate = 0;              // hiding the save buttons
    // console.log(typeof editorstate);
     var listEl = document.getElementById('CompetenceList');
-    document.getElementById("SaveCompetence").style.display = "none";
     document.getElementById("SaveJson").style.display = "none";
     console.log(typeof listEl);
 
@@ -315,52 +319,38 @@ if (isset($_POST['service'])) {
 
     //Adding functionality to the buttons ------------------------------------------------------------------------
     //save part of json
-    document.getElementById('SaveCompetence').onclick = function () {
+    document.getElementById('SaveJson').onclick = function () {
+
         var editedjson = JSON.stringify(editor.get()); //Taking the edited json from the editor and converting it to a string(The one that is edited after pressing the edit button)
         var oldjson = JSON.stringify(myjson);//Taking the old JSON before any changes and making it string (The old json is the one that is loaded when we press the edit button)
         var originaljson = JSON.stringify(jsorbj);//Converting the value of the variable  jsorbj  to a string(Originaljson-the one that is passed from php to JS)
-        var sendingjson = originaljson.replace(oldjson, editedjson);// Searching for the oldjson inside the originaljson and replacing it with the editedjson
+        var sendingjson = JSON.stringify(originaljson.replace(oldjson, editedjson));// Searching for the oldjson inside the originaljson and replacing it with the editedjson
 
-        sendingjson = JSON.parse(sendingjson);                      //JSON.parse-Converting the sendingjson string  to Javascript object
-        $.ajax({                                                                    //Converting the object from Javascript to PHP
-            type: 'post',
-            url: 'index.php',
-            contentType: "application/x-www-form-urlencoded;charset=utf-8",
-            data: {service: sendingjson},
-            success: function (msh) {
-                $('#successalert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence successfully edited").show();
-            },
-            error: function (msg) {
-                $('#dangeralert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence unsuccessfully edited").show();
+	document.getElementById("newJSONinput").value = sendingjson;
+	document.getElementById("StoreJSONformSubmit").click();
+	// document.getElementById("StoreJSONform").submit();
+        // $.ajax({                                                                    //Converting the object from Javascript to PHP
+        //     type: 'post',
+        //     url: 'StoreJSON.php',
+        //     contentType: "application/x-www-form-urlencoded;charset=utf-8",
+        //     data: {service: sendingjson},
+        //     success: function (msh) {
+        //         $('#successalert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence successfully edited").show();
+        //     },
+        //     error: function (msg) {
+        //         $('#dangeralert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence unsuccessfully edited").show();
 
-            }
-        });
+        //     }
+        // });
 
     };
     // load json
     document.getElementById('LoadJson').onclick = function () {
         //editor.set(json)
-        editor.set(<?php echo $row[0] ?>); //Setting the json in the editor to be the one that is send from php to javascript
+        myjson = <?php echo $row[0] ?>;
+        editor.set(myjson); //Setting the json in the editor to be the one that is send from php to javascript
         editorstate = 1;
         showbutton(editorstate);
-    };
-
-    // save json
-    document.getElementById('SaveJson').onclick = function () {
-        myjson = editor.get();
-        //  function that update the sql json file on database over php function with the myjson.json
-        $.ajax({
-            type: 'post',
-            url: 'index.php',
-            contentType: "application/x-www-form-urlencoded;charset=utf-8",
-            data: {service: myjson},
-            success: function (msh) {
-                $('#successalert').html("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n Json successfully edited").show();
-            },
-            error: function (msg) {
-                $('#dangeralert').html("<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-hidden=\"true\">&times;</button>\n Json unsuccessfully edited").show();
-            }
-        });
     };
 
     //Helper function ------------------------------------------------------------------------------------------------
@@ -371,16 +361,93 @@ if (isset($_POST['service'])) {
         showbutton(editorstate);//Calling the showbutton function and passing the editorstate parameter
     }
     function showbutton(state){
-
-        if (state === 1)       // If  the Load full JSON button is pressed it will display the SaveJson button and hide the SaveCompetence button
-        {
             document.getElementById("SaveJson").style.display = "block";
-            document.getElementById("SaveCompetence").style.display = "none";
-        }
-        else if (state === 2){      // If  the Edit button is pressed it will display the SaveCompetence button and hide the SaveJson button
-            document.getElementById("SaveJson").style.display = "none";
-            document.getElementById("SaveCompetence").style.display = "block";
-        }
     }
+
+
+// Ajax
+window.addEventListener( "load", function () {
+  function sendData(event, errorCallback, successCallback) {
+    const XHR = new XMLHttpRequest();
+
+    // Bind the FormData object and the form element
+    FD = new FormData( event.currentTarget );
+    FD.append(event.submitter.name, null);
+
+    // Define what happens on successful data submission
+    XHR.addEventListener( "load", function( e ) {
+      if (XHR.status == 500)
+         errorCallback("Error 500: Internal Server Error", event.submitter.name);
+      else
+         successCallback( e.target.responseText, event.submitter.name );
+    } );
+
+    // Define what happens in case of error
+    XHR.addEventListener( "error", function( e ) {
+      errorCallback( 'Oops! Something went wrong.', event.submitter.name );
+    } );
+
+    // Set up our request
+    XHR.open( "POST", event.currentTarget.action );
+
+    // The data sent is what the user provided in the form
+    XHR.send( FD );
+  }
+
+  function setupAsyncFormSubmit(formId, successCallback, errorCallback) {
+  	   form = document.getElementById(formId);
+  	   form.addEventListener( "submit", function ( event ) {
+    	   	event.preventDefault();
+                sendData(event, errorCallback, successCallback);
+  	   } );
+  }
+
+  setupAsyncFormSubmit("loadcompetenceform", function (responseJSON, submitter) {
+     if (submitter=="findcompetence") {
+        var value_else_empty = function (obj, attribute) {
+            if (typeof obj != "object" || obj == null)
+	       return "";
+            if (!obj.hasOwnProperty(attribute))
+	       return "";
+	    return obj[attribute]!=null?obj[attribute]:"";
+        }    
+        var obj = null;
+        try { 
+           obj = JSON.parse(responseJSON); 
+	   if (obj == null) {
+	      throw "Competence not found"; 
+	   }
+        } catch (e) { 
+    	     alert(JSON.stringify(e));
+        } 
+        form = document.getElementById("updatecompetenceform");
+        form["preferredLabel"].value = value_else_empty(obj, "preferredLabel");
+        form["altLabels"].value = value_else_empty(obj, "altLabels");
+        form["overriddenSearchPatterns"].value = value_else_empty(obj, "overriddenSearchPatterns");
+        form["overriddenSearchPatterns"].placeholder = value_else_empty(obj, "defaultSearchPatterns");
+        form["grp"].value = value_else_empty(obj, "grp");
+     } else if (submitter=="createcompetence") {
+        if (responseJSON)
+	   alert(responseJSON);
+        else
+	   document.getElementById('loadcompetenceformfindcompetence').click();
+     }
+  }, alert);
+
+  setupAsyncFormSubmit("updatecompetenceform", function (responseJSON) {
+        if (responseJSON)
+	   alert(responseJSON);
+        else
+	{
+	   alert ("Successful database update");
+	   document.getElementById('loadcompetenceformfindcompetence').click();
+	}
+  }, alert);
+
+  setupAsyncFormSubmit("StoreJSONform", alert, alert);
+
+} );
+
+
 </script>
 </html>
