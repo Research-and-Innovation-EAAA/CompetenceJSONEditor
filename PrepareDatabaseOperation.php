@@ -44,5 +44,4 @@ function dbExecute($sqlQuery) {
     }
 }
 
-
 ?>

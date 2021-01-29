@@ -22,6 +22,17 @@ if (isset($_POST['newJSON'])) {
 
 
 #
+# Load json --------------------------------------------------------------------
+#
+if (isset($_POST['getJSON'])) {
+
+    dbExecute("select shinyTreeJSON from global where _id = 1");
+    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
+    echo($row["shinyTreeJSON"]);
+}
+
+
+#
 # Close database connection ----------------------------------------------------
 #
 require 'FinalizeDatabaseOperation.php';

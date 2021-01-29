@@ -1,20 +1,7 @@
 <?php
 $json="";
-$row="";
 require 'credentials.php';
 $language ="da";
-
-#Connecting to the database and loading competences ------------------------------------------------------------
-$connect = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());
-#changing character set to utf8
-mysqli_character_set_name($connect);#Returns the character set for the database connection
-if (!mysqli_set_charset($connect, "utf8mb4")) { //Checking if the character set is set to UTF-8 if it is false it will show printf
-    printf("Error loading character set utf8: %s\n", mysqli_error($connect));
-    exit();
-}
-$sql = mysqli_query($connect, "select shinyTreeJSON from global where _id = 1");
-$row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetched row in this case the result from the query
-
 
 ?>
 <!DOCTYPE HTML>
@@ -69,7 +56,7 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
 
 <div class="tab-content container border-left border-bottom border-right" id="myTabContent">
   <br/>
-  <form id="StoreJSONform" name="StoreJSON" id="StoreJSONform" method="post" action="StoreJSON.php" style="display:none;">
+  <form id="StoreJSONform" name="StoreJSONform" method="post" action="StoreJSON.php" style="display:none;">
       <input id="newJSONinput" name="newJSON" />
       <button type="submit" id="StoreJSONformSubmit" name="StoreJSONformSubmit">Update JSON tree in database</button>
   </form>
@@ -77,7 +64,9 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
 
     <div class="row">
       <div class="col-sm-4">
-          <button type="button" class="btn btn-block btn-lg btn-warning" id="LoadJson">Load from database</button>
+          <form id="LoadJSONform" name="LoadJSONform" method="post" action="StoreJSON.php">
+             <button type="submit" class="btn btn-block btn-lg btn-warning" id="getJSON" name="getJSON">Load from database</button>
+	  </form>
 	<br/>
 	<div class="right-menu">
 
@@ -223,9 +212,6 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
 </body>
 <script>
     // create the editor ------------------------------------------------------------------------------------------------
-    $(document).ready(function () {
-        $('.treeview-animated').mdbTreeview(); //initializing the treeview for the list with the competences
-    });
     const container = document.getElementById('jsoneditor');
     const options = {
         mode: 'tree',
@@ -243,15 +229,13 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
     };
     const editor = new JSONEditor(container, options);
 
-    //creating variables for making a list, loading and saving json ------------------------------------------------
-    var myjson = {}; //Creating an empty object which is used later on
-    var jsorbj = <?php echo $row[0] ?> ; //creating a variable jsorobj and assigning a value the converted object from php to javascript
-    //console.log(typeof jsorbj);
+   //creating variables for making a list, loading and saving json ------------------------------------------------
+   var myjson = {}; //Creating an empty object which is used later on
     var editorstate = 0;              // hiding the save buttons
    // console.log(typeof editorstate);
     var listEl = document.getElementById('CompetenceList');
     document.getElementById("SaveJson").style.display = "none";
-    console.log(typeof listEl);
+    //console.log(typeof listEl);
 
 
     //making a list function with the design -----------------------------------------------------------------------
@@ -319,9 +303,7 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
                 makeList(jsonObject[i], newLi);
             }
         }
-
     }
-    makeList(jsorbj, listEl);
 
     //Adding functionality to the buttons ------------------------------------------------------------------------
     //save part of json
@@ -329,34 +311,12 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
 
         var editedjson = JSON.stringify(editor.get()); //Taking the edited json from the editor and converting it to a string(The one that is edited after pressing the edit button)
         var oldjson = JSON.stringify(myjson);//Taking the old JSON before any changes and making it string (The old json is the one that is loaded when we press the edit button)
-        var originaljson = JSON.stringify(jsorbj);//Converting the value of the variable  jsorbj  to a string(Originaljson-the one that is passed from php to JS)
+        var originaljson = JSON.stringify(loaded_json_object);//Converting the value of the variable  loaded_json_object to a string(Originaljson-the one that is passed from php to JS)
         var sendingjson = JSON.stringify(originaljson.replace(oldjson, editedjson));// Searching for the oldjson inside the originaljson and replacing it with the editedjson
 
 	document.getElementById("newJSONinput").value = sendingjson;
 	document.getElementById("StoreJSONformSubmit").click();
-	// document.getElementById("StoreJSONform").submit();
-        // $.ajax({                                                                    //Converting the object from Javascript to PHP
-        //     type: 'post',
-        //     url: 'StoreJSON.php',
-        //     contentType: "application/x-www-form-urlencoded;charset=utf-8",
-        //     data: {service: sendingjson},
-        //     success: function (msh) {
-        //         $('#successalert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence successfully edited").show();
-        //     },
-        //     error: function (msg) {
-        //         $('#dangeralert').html("<button type=\"button\" class=\"close\" onclick=\"$('.alert').hide()\" aria-hidden=\"true\">&times;</button>\n Competence unsuccessfully edited").show();
 
-        //     }
-        // });
-
-    };
-    // load json
-    document.getElementById('LoadJson').onclick = function () {
-        //editor.set(json)
-        myjson = <?php echo $row[0] ?>;
-        editor.set(myjson); //Setting the json in the editor to be the one that is send from php to javascript
-        editorstate = 1;
-        showbutton(editorstate);
     };
 
     //Helper function ------------------------------------------------------------------------------------------------
@@ -451,7 +411,28 @@ window.addEventListener( "load", function () {
 	}
   }, alert);
 
-  setupAsyncFormSubmit("StoreJSONform", alert, alert);
+  setupAsyncFormSubmit("StoreJSONform", function () {
+  	document.getElementById('getJSON').click();
+  }, alert);
+
+  setupAsyncFormSubmit("LoadJSONform", function (responseJSON) {
+        try { 
+           obj = JSON.parse(responseJSON); 
+	   if (!obj || typeof obj != "object")
+	      throw "JSON object not found"; 
+	   loaded_json_object = obj;
+        } catch (e) { 
+    	     alert(JSON.stringify(e));
+	     return;
+        } 
+        editor.set(loaded_json_object); //Setting the json in the editor to be the one that is send from php to javascript
+        editorstate = 1;
+        showbutton(editorstate);
+        makeList(loaded_json_object, listEl);
+        $('.treeview-animated').mdbTreeview(); //initializing the treeview for the list with the competences
+  }, alert);
+
+ document.getElementById('getJSON').click();
 
 } );
 
