@@ -182,6 +182,12 @@ $row = mysqli_fetch_array($sql);//Returns an array that corresponds to the fetch
 	     </div>
 	</div>
       	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="conceptUri">Concept URI</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" id="conceptUri" name="conceptUri">
+	     </div>
+	</div>
+      	<div class="form-group row">
 	     <label class="col-form-label col-sm-3" for="overriddenSearchPatterns">Search pattern</label>
 	     <div class="col-sm-9">
 	     	  <input type="text" class="form-control" id="overriddenSearchPatterns" name="overriddenSearchPatterns">
@@ -426,6 +432,7 @@ window.addEventListener( "load", function () {
         form["overriddenSearchPatterns"].value = value_else_empty(obj, "overriddenSearchPatterns");
         form["overriddenSearchPatterns"].placeholder = value_else_empty(obj, "defaultSearchPatterns");
         form["grp"].value = value_else_empty(obj, "grp");
+        form["conceptUri"].value = value_else_empty(obj, "conceptUri");
      } else if (submitter=="createcompetence") {
         if (responseJSON)
 	   alert(responseJSON);

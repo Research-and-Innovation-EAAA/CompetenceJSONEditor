@@ -13,20 +13,21 @@ require 'PrepareDatabaseOperation.php';
 if (isset($_POST['findcompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
-   dbExecute("SELECT prefferredLabel as preferredLabel, altLabels, defaultSearchPatterns, overriddenSearchPatterns, grp FROM kompetence WHERE prefferredLabel LIKE '".$preferredLabel."' limit 1");
+   dbExecute("SELECT prefferredLabel as preferredLabel, altLabels, defaultSearchPatterns, overriddenSearchPatterns, grp, conceptUri FROM kompetence WHERE prefferredLabel LIKE '".$preferredLabel."' limit 1");
    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
    echo(stripslashes(json_encode($row)));
 
 } else if (isset($_POST['createcompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
-   dbExecute("INSERT INTO kompetence (prefferredLabel) VALUES ('".$preferredLabel."')");
+   dbExecute("INSERT INTO kompetence (prefferredLabel, grp, conceptUri) VALUES ('".$preferredLabel."','Misc','Misc-".$preferredLabel."')");
 
 } else if (isset($_POST['updatecompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
    $altLabels = $_POST['altLabels'];
    $grp = $_POST['grp'];
+   $conceptUri = $_POST['conceptUri'];
    $overriddenSearchPatterns = $_POST['overriddenSearchPatterns'];
 
    $query = "";
@@ -39,6 +40,11 @@ if (isset($_POST['findcompetence'])) {
       if (!empty($query))
       	 $query .= ", ";
       $query .= "grp='".$grp."'";
+   }
+   if (!empty($conceptUri)) {
+      if (!empty($query))
+      	 $query .= ", ";
+      $query .= "conceptUri='".$conceptUri."'";
    }
    if (!empty($overriddenSearchPatterns)) {
       if (!empty($query))
