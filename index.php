@@ -211,6 +211,9 @@ $language ="da";
 
 </body>
 <script>
+    document.editButtonClicked = undefined;
+    document.oldEditButtonClicked = undefined;
+
     // create the editor ------------------------------------------------------------------------------------------------
     const container = document.getElementById('jsoneditor');
     const options = {
@@ -235,7 +238,6 @@ $language ="da";
    // console.log(typeof editorstate);
     var listEl = document.getElementById('CompetenceList');
     document.getElementById("SaveJson").style.display = "none";
-    //console.log(typeof listEl);
 
 
     //making a list function with the design -----------------------------------------------------------------------
@@ -258,14 +260,16 @@ $language ="da";
                     newa.className = "closed";
                     json = jsonObject[i];//Renaming the variable for readability
                     button = document.createElement('button');
+                    button.id = "button-"+jsonObject[i]["text"]+"-id";
                     button.innerText = "Edit";
                     button.type = "button";
                     button.className = "jsonbutton btn btn-outline-primary d-flex  btn-sm";
-                    button.addEventListener('click', (function (inner_json) {
+                    button.addEventListener('click', (function (inner_json, buttonId) {
                         return function () {
+         		        document.editButtonClicked = buttonId;
                             loadjsonpart(inner_json);
                         }
-                    }(json)), false);
+                    }(json,button.id)), false);
                     newdiv.innerHTML = jsonObject[i]["text"];  // Accessing the text of the key of the object
                     newdiv.appendChild(button);
                     newa.appendChild(newdiv);
@@ -412,10 +416,12 @@ window.addEventListener( "load", function () {
   }, alert);
 
   setupAsyncFormSubmit("StoreJSONform", function () {
+	document.oldEditButtonClicked = document.editButtonClicked;
   	document.getElementById('getJSON').click();
   }, alert);
 
   setupAsyncFormSubmit("LoadJSONform", function (responseJSON) {
+	document.editButtonClicked = undefined;
         try { 
            obj = JSON.parse(responseJSON); 
 	   if (!obj || typeof obj != "object")
@@ -425,11 +431,18 @@ window.addEventListener( "load", function () {
     	     alert(JSON.stringify(e));
 	     return;
         } 
+        myjson = loaded_json_object;//Creating a myjson variable and assigning to it to the value of the json (the part loaded in the editor after pressing the edit button)
         editor.set(loaded_json_object); //Setting the json in the editor to be the one that is send from php to javascript
         editorstate = 1;
         showbutton(editorstate);
+	$(listEl).empty();
+        $('.treeview-animated').mdbTreeview(); //initializing the treeview for the list with the competences
         makeList(loaded_json_object, listEl);
         $('.treeview-animated').mdbTreeview(); //initializing the treeview for the list with the competences
+	if (document.oldEditButtonClicked) {
+	   document.getElementById(document.oldEditButtonClicked).click();
+	   document.oldEditButtonClicked = undefined;
+	}
   }, alert);
 
  document.getElementById('getJSON').click();
