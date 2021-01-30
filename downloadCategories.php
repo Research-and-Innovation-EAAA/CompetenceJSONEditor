@@ -32,7 +32,7 @@ $spreadsheet->getProperties()->setCreator('Maarten Balliauw')
     ->setKeywords('office 2007 openxml php')
     ->setCategory('Test result file');
 
-$sqlQuery = 'SELECT CASE sub.altLabels WHEN NULL THEN sub.prefferredLabel WHEN "" THEN sub.prefferredLabel ELSE CONCAT(sub.prefferredLabel, "/", sub.altLabels) END childLabels, "Added" connection, sup.prefferredLabel parentLabel, sup.grp parentGrp FROM `kompetence` sub LEFT JOIN kompetence_kategorisering kat ON sub.conceptUri=kat.subkompetence JOIN kompetence sup ON kat.superkompetence=sup.conceptUri where CASE sub.altLabels WHEN NULL THEN sub.prefferredLabel WHEN "" THEN sub.prefferredLabel ELSE CONCAT(sub.prefferredLabel, "/", sub.altLabels) END is not null';
+$sqlQuery = 'SELECT CASE sub.altLabels WHEN NULL THEN sub.prefferredLabel WHEN "" THEN sub.prefferredLabel ELSE CONCAT(sub.prefferredLabel, "/", sub.altLabels) END childLabels, "Added" connection, sup.prefferredLabel parentLabel, sup.grp parentGrp FROM `kompetence` sub LEFT JOIN ( kompetence_kategorisering kat JOIN kompetence sup ON kat.superkompetence=sup.conceptUri )  ON sub.conceptUri=kat.subkompetence where CASE sub.altLabels WHEN NULL THEN sub.prefferredLabel WHEN "" THEN sub.prefferredLabel ELSE CONCAT(sub.prefferredLabel, "/", sub.altLabels) END is not null';
 
 /* Select queries return a resultset */
 $sheet = $spreadsheet->setActiveSheetIndex(0);

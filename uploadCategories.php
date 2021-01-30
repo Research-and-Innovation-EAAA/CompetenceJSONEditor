@@ -156,14 +156,17 @@ foreach ($sheetData as $row) {
         continue;
     } 
 
-    if ($connection != "Added" && $connection != "Removed") {
-        echo "<p>Bad value in connection column</p>";
-        exit;
+    if (empty($childLabel)) {
+        continue;
+    } else {
+        dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$childLabel.'","'.$childAltLabels.'","'.$childConceptUri.'","")');
     }
 
-    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$childLabel.'","'.$childAltLabels.'","'.$childConceptUri.'","")');
-
-    dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$parentLabel.'","","'.$parentLabel.'","'.$parentGrp.'")');
+    if (($connection != "Added" && $connection != "Removed") || empty($parentLabel)) {
+        continue;
+    } else {
+        dbExecuteDML($mysqli, 'insert ignore into kompetence (prefferredLabel, altLabels, conceptUri, grp) values ("'.$parentLabel.'","","'.$parentLabel.'","'.$parentGrp.'")');
+    }
 
     if ($connection == "Added") {
         dbExecuteDML($mysqli, 'insert ignore into kompetence_kategorisering (superkompetence, subkompetence) select sup.conceptUri superkompetence, sub.conceptUri subkompetence from kompetence sup JOIN kompetence sub ON sup.prefferredLabel="'.$parentLabel.'" AND sub.prefferredLabel="'.$childLabel.'" ');    		      	 
