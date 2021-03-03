@@ -1,5 +1,4 @@
 <?php
-
 $language ="da";
 
 #
@@ -15,7 +14,7 @@ if (isset($_POST['findcompetence'])) {
    $preferredLabel = $_POST['preferredLabel'];
    dbExecute("SELECT prefferredLabel as preferredLabel, altLabels, defaultSearchPatterns, overriddenSearchPatterns, grp, conceptUri FROM kompetence WHERE prefferredLabel LIKE '".$preferredLabel."' limit 1");
    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
-   echo(stripslashes(json_encode($row)));
+   echo(stripslashes(json_encode($row, JSON_UNESCAPED_UNICODE)));
 
 } else if (isset($_POST['createcompetence'])) {
 
