@@ -60,9 +60,29 @@ if (isset($_POST['findcompetence'])) {
    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
    $id = $row['_id'];
 
-   $preferredLabel = $_POST['preferredLabel'];
    dbExecute("CALL deleteCompetence(".$id.")");
 
+} else if (isset($_POST['mergecompetencies'])) {
+
+   $remain_label = $_POST['remain_label'];
+   dbExecute("SELECT _id FROM kompetence WHERE prefferredLabel = '".$remain_label."' limit 1");
+   $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
+   $remain_id = $row['_id'];
+   if (empty($remain_id)) {
+      echo("Unknown remain label: ".$remain_label);
+      die();
+   }
+
+   $remove_label = $_POST['remove_label'];
+   dbExecute("SELECT _id FROM kompetence WHERE prefferredLabel = '".$remove_label."' limit 1");
+   $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
+   $remove_id = $row['_id'];
+   if (empty($remove_id)) {
+      echo("Unknown remove label: ".$remove_label);
+      die();
+   }
+   
+   dbExecute("CALL mergeCompetencies(".$remain_id.",".$remove_id.")");
 }
 
 

@@ -140,15 +140,11 @@ $language ="da";
 	      </form>
 	      
         <br/>
-
-
-
         <br/>
-
 	      <hr/>
+        <br/>
+        <br/>
 
-        <br/>
-        <br/>
 	<h4>Update competence</h4>
 
       <form id="updatecompetenceform" action="manipulatecompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
@@ -182,16 +178,44 @@ $language ="da";
 	     	  <input type="text" class="form-control" id="overriddenSearchPatterns" name="overriddenSearchPatterns">
 	     </div>
 	</div>
-      	<div class="form-group row">
+      	<!-- <div class="form-group row">
 	     <label class="col-form-label col-sm-3" for="_id">ID</label>
 	     <div class="col-sm-9">
 	     	  <input type="text" readonly class="form-control" id="_id" name="_id">
 	     </div>
-	</div>
+	</div> -->
 	<div class="form-group row">
 	     <div class="btn-group container">
 	     	  <button class="btn btn-danger" type="submit" name="updatecompetence" style="margin: 0 6px 0 0;">Update competence</button>
 		  <button class="btn btn-danger" type="submit" name="deletecompetence" style="margin: 0 0 0 6px;">Delete competence</button>
+             </div>
+	</div>
+      </form>
+	      
+        <br/>
+        <br/>
+	      <hr/>
+        <br/>
+        <br/>
+
+	<h4>Merge competencies</h4>
+
+      <form id="mergecompetenciesform" action="manipulatecompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="remain_label">Remain label</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" id="remain_label" name="remain_label">
+	     </div>
+	</div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="remove_label">Remove label</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" id="remove_label" name="remove_label">
+	     </div>
+	</div>
+	<div class="form-group row">
+	     <div class="btn-group container">
+		  <button class="btn btn-danger" type="submit" name="mergecompetencies" style="margin: 0 0 0 0;">Merge competencies</button>
              </div>
 	</div>
       </form>
@@ -420,6 +444,17 @@ window.addEventListener( "load", function () {
 	   alert ("Successful database update");
 	   document.getElementById('loadcompetenceformfindcompetence').click();
 	}
+  }, alert);
+
+  setupAsyncFormSubmit("mergecompetenciesform", function (responseJSON) {
+        if (responseJSON)
+	   alert(responseJSON);
+        else
+	   alert ("Successful database update");
+           loadform = document.getElementById("loadcompetenceform");
+           mergeform = document.getElementById("mergecompetenciesform");
+           loadform["preferredLabel"].value = mergeform["remain_label"].value;
+	   document.getElementById('loadcompetenceformfindcompetence').click();
   }, alert);
 
   setupAsyncFormSubmit("StoreJSONform", function () {
