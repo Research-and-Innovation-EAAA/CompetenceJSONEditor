@@ -182,6 +182,12 @@ $language ="da";
 	     	  <input type="text" class="form-control" id="overriddenSearchPatterns" name="overriddenSearchPatterns">
 	     </div>
 	</div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="_id">ID</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" readonly class="form-control" id="_id" name="_id">
+	     </div>
+	</div>
 	<div class="form-group row">
 	     <div class="btn-group container">
 	     	  <button class="btn btn-danger" type="submit" name="updatecompetence" style="margin: 0 6px 0 0;">Update competence</button>
@@ -397,6 +403,7 @@ window.addEventListener( "load", function () {
         form["overriddenSearchPatterns"].placeholder = value_else_empty(obj, "defaultSearchPatterns");
         form["grp"].value = value_else_empty(obj, "grp");
         form["conceptUri"].value = value_else_empty(obj, "conceptUri");
+        form["_id"].value = value_else_empty(obj, "_id");
      } else if (submitter=="createcompetence") {
         if (responseJSON)
 	   alert(responseJSON);
