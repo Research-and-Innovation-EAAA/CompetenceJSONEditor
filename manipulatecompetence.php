@@ -19,7 +19,7 @@ if (isset($_POST['findcompetence'])) {
 } elseif (isset($_POST['createcompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
-   dbExecute("INSERT INTO kompetence (prefferredLabel, grp, conceptUri) VALUES ('".$preferredLabel."','Misc','Misc-".$preferredLabel."')");
+   dbExecute("INSERT INTO kompetence (prefferredLabel, grp) VALUES ('".$preferredLabel."','Misc')");
 
 } elseif (isset($_POST['updatecompetence'])) {
 
