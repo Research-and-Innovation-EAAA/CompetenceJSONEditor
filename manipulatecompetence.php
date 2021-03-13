@@ -16,12 +16,12 @@ if (isset($_POST['findcompetence'])) {
    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
    echo(stripslashes(json_encode($row, JSON_UNESCAPED_UNICODE)));
 
-} else if (isset($_POST['createcompetence'])) {
+} elseif (isset($_POST['createcompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
    dbExecute("INSERT INTO kompetence (prefferredLabel, grp, conceptUri) VALUES ('".$preferredLabel."','Misc','Misc-".$preferredLabel."')");
 
-} else if (isset($_POST['updatecompetence'])) {
+} elseif (isset($_POST['updatecompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
    $altLabels = $_POST['altLabels'];
@@ -53,7 +53,7 @@ if (isset($_POST['findcompetence'])) {
    $query = "UPDATE kompetence SET ".$query." WHERE prefferredLabel = '".$preferredLabel."'";
    dbExecute($query);
 
-} else if (isset($_POST['deletecompetence'])) {
+} elseif (isset($_POST['deletecompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
    dbExecute("SELECT _id FROM kompetence WHERE prefferredLabel = '".$preferredLabel."' limit 1");
@@ -62,7 +62,7 @@ if (isset($_POST['findcompetence'])) {
 
    dbExecute("CALL deleteCompetence(".$id.")");
 
-} else if (isset($_POST['mergecompetencies'])) {
+} elseif (isset($_POST['mergecompetencies'])) {
 
    $remain_label = $_POST['remain_label'];
    dbExecute("SELECT _id FROM kompetence WHERE prefferredLabel = '".$remain_label."' limit 1");
@@ -83,6 +83,32 @@ if (isset($_POST['findcompetence'])) {
    }
    
    dbExecute("CALL mergeCompetencies(".$remain_id.",".$remove_id.")");
+
+} elseif (isset($_POST['addCompetenceToCategory']) ||
+           isset($_POST['removeCompetenceFromCategory'])) {
+
+   $childCompetenceLabel = $_POST['childCompetenceLabel'];
+   $parentCompetenceLabel = $_POST['parentCompetenceLabel'];
+   if (empty($childCompetenceLabel)) {
+      echo("Child label is empty.");
+      die();      
+   }
+   if (empty($parentCompetenceLabel)) {
+      echo("Parent label is empty.");
+      die();      
+   }  
+     
+   if (isset($_POST['addCompetenceToCategory'])) {
+      dbExecute('insert ignore into kompetence_kategorisering (superkompetence, subkompetence) select sup.conceptUri superkompetence, sub.conceptUri subkompetence from kompetence sup JOIN kompetence sub ON sup.prefferredLabel="'.$parentCompetenceLabel.'" AND sub.prefferredLabel="'.$childCompetenceLabel.'" ');    		      	  
+   } elseif (isset($_POST['removeCompetenceFromCategory'])) {
+      dbExecute('delete from kompetence_kategorisering where superkompetence in (select sup.conceptUri superkompetence from kompetence sup WHERE sup.prefferredLabel="'.$parentCompetenceLabel.'") AND subkompetence in (select sub.conceptUri subkompetence from kompetence sub where sub.prefferredLabel="'.$childCompetenceLabel.'")');    		      	 
+   }
+
+} else {
+
+   echo("Unknown command to manipulate competence.");
+   die();        
+
 }
 
 

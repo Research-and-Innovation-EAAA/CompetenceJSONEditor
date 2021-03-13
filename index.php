@@ -34,7 +34,7 @@ $language ="da";
 <body>
 <div class="jumbotron text-center title">
     <h1>Competence administration tool</h1>
-    <h5 class="text-muted">Research and innovation at Business Academy Aarhus maintain a database with competences.<br/>Below you will find a tool that allows you to administrate the competences and their categorization.</h5>
+    <h5 class="text-muted">Research and innovation at Business Academy Aarhus maintain a database with competences.<br/>Below you will find a tool that allows you to administrate the competences and their categories.</h5>
 </div>
 <br>
 
@@ -50,7 +50,7 @@ $language ="da";
   </li>
   <li class="nav-item">
     <a class="nav-link" id="competencies-tab" data-toggle="tab" href="#competencies" role="tab" aria-controls="competencies"
-      aria-selected="true">Competencies</a>
+      aria-selected="true">Competences</a>
   </li>
 </ul>
 
@@ -91,7 +91,36 @@ $language ="da";
   </div>
   <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
         <br/>
-	<p> Download Excel file with database existing competences and categories:</p>
+
+	<h4>Update competence category</h4>
+
+      <form id="updateCompetenceCategory" action="manipulatecompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="childCompetenceLabel">Competence label</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" name="childCompetenceLabel">
+	     </div>
+	</div>
+      	<div class="form-group row">
+	     <label class="col-form-label col-sm-3" for="categoryLabel">Category label</label>
+	     <div class="col-sm-9">
+	     	  <input type="text" class="form-control" name="parentCompetenceLabel">
+	     </div>
+	</div>
+	<div class="form-group row">
+	     <div class="btn-group container">
+	     	  <button class="btn btn-warning" type="submit" name="addCompetenceToCategory" style="margin: 0 6px 0 0;">Add competence to category</button>
+		  <button class="btn btn-warning" type="submit" name="removeCompetenceFromCategory" style="margin: 0 0 0 6px;">Remove competence from category</button>
+             </div>
+	</div>
+      </form>
+	      
+        <br/>
+        <br/>
+	      <hr/>
+        <br/>
+        <br/>
+	<h4> Download current competences and categories</h4>
 	      <form action="downloadCategories.php" method="get" enctype="multipart/form-data">
 	      	    <button class="btn btn-primary btn-block my-4" type="submit" name="submit">Download current Excel file</button>
 	      </form>
@@ -101,7 +130,7 @@ $language ="da";
 
         <br/>
         <br/>
-	<p>      Select Excel document to update competence category content:</p>
+	<h4>      Upload changed competences and categories</h4>
 
 
       <form action="uploadCategories.php" method="post" enctype="multipart/form-data">
@@ -198,7 +227,7 @@ $language ="da";
         <br/>
         <br/>
 
-	<h4>Merge competencies</h4>
+	<h4>Merge competences</h4>
 
       <form id="mergecompetenciesform" action="manipulatecompetence.php" method="post" enctype="multipart/form-data"  style="text-align: left">
       	<div class="form-group row">
@@ -215,7 +244,7 @@ $language ="da";
 	</div>
 	<div class="form-group row">
 	     <div class="btn-group container">
-		  <button class="btn btn-danger" type="submit" name="mergecompetencies" style="margin: 0 0 0 0;">Merge competencies</button>
+		  <button class="btn btn-danger" type="submit" name="mergecompetencies" style="margin: 0 0 0 0;">Merge competences</button>
              </div>
 	</div>
       </form>
@@ -450,14 +479,27 @@ window.addEventListener( "load", function () {
         if (responseJSON)
 	   alert(responseJSON);
         else
+	{
 	   alert ("Successful database update");
            loadform = document.getElementById("loadcompetenceform");
            mergeform = document.getElementById("mergecompetenciesform");
            loadform["preferredLabel"].value = mergeform["remain_label"].value;
 	   document.getElementById('loadcompetenceformfindcompetence').click();
+        }
   }, alert);
 
-  setupAsyncFormSubmit("StoreJSONform", function () {
+  setupAsyncFormSubmit("updateCompetenceCategory", function (responseJSON) {
+        if (responseJSON)
+	   alert(responseJSON);
+        else
+	   alert ("Successful database update");
+  }, alert);
+
+  setupAsyncFormSubmit("StoreJSONform", function (responseJSON) {
+        if (responseJSON)
+	   alert(responseJSON);
+        else
+	   alert ("Successful database update");
 	document.oldEditButtonClicked = document.editButtonClicked;
   	document.getElementById('getJSON').click();
   }, alert);

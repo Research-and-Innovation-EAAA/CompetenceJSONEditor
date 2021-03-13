@@ -5,7 +5,10 @@ require_once 'credentials.php';
 
 $language ="da";
 
-#Connecting to the database and loading competences ------------------------------------------------------------
+#
+#Connecting to the database ------------------------------------------------------------
+#
+
 $GLOBALS["mysqli"] = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());
 #changing character set to utf8
 $charset = $GLOBALS["mysqli"]->character_set_name();#Returns the character set for the database connection
@@ -14,6 +17,10 @@ if (!$GLOBALS["mysqli"]->set_charset("utf8mb4")) { //Checking if the character s
     exit();
 }
 $GLOBALS["mysqli"]->autocommit(true);
+
+#
+# Define database action functions -----------------------------------------------------
+#
 
 // Free result
 function dbFreeResult() {
