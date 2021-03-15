@@ -456,7 +456,7 @@ window.addEventListener( "load", function () {
         form["overriddenSearchPatterns"].placeholder = value_else_empty(obj, "defaultSearchPatterns");
         form["grp"].value = value_else_empty(obj, "grp");
         form["conceptUri"].value = value_else_empty(obj, "conceptUri");
-        form["_id"].value = value_else_empty(obj, "_id");
+        // form["_id"].value = value_else_empty(obj, "_id");
      } else if (submitter=="createcompetence") {
         if (responseJSON)
 	   alert(responseJSON);
