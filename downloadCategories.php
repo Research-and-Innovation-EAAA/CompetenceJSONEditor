@@ -1,23 +1,16 @@
 <?php
 
 require 'vendor/autoload.php';
-require 'credentials.php';
 
 $language ="da";
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-
-#Connecting to the database and loading competences ------------------------------------------------------------
-$mysqli = new mysqli($host, $user, $password, $db, $port, $language) or die("failed" . mysqli_error());
-#changing character set to utf8
-$charset = $mysqli->character_set_name();#Returns the character set for the database connection
-if (!$mysqli->set_charset("utf8mb4")) { //Checking if the character set is set to UTF-8 if it is false it will show printf
-    printf("Error loading character set utf8: %s\n", $mysqli->error());
-    exit();
-}
-$mysqli->autocommit(true);
+#
+# Open database connection -----------------------------------------------------
+#
+require 'PrepareDatabaseOperation.php';
 
 // Create new Spreadsheet object
 $spreadsheet = new Spreadsheet();
@@ -41,8 +34,9 @@ $sheet->setCellValueByColumnAndRow(1, $i, "childLabels");
 $sheet->setCellValueByColumnAndRow(2, $i, "connection");
 $sheet->setCellValueByColumnAndRow(3, $i, "parentLabel");
 $sheet->setCellValueByColumnAndRow(4, $i, "parentGrp");
-if ($result = $mysqli->query($sqlQuery)) {
-    while($row = $result->fetch_object()) {
+dbExecute($sqlQuery);
+if ($GLOBALS["mysqliresult"]) {
+    while($row = $GLOBALS["mysqliresult"]->fetch_object()) {
     	       $i++;
 	       $sheet->setCellValueByColumnAndRow(1, $i, $row->childLabels);
 	       $sheet->setCellValueByColumnAndRow(2, $i, $row->connection);
@@ -50,14 +44,17 @@ if ($result = $mysqli->query($sqlQuery)) {
 	       $sheet->setCellValueByColumnAndRow(4, $i, $row->parentGrp);
     }
 }
-$result->close();
 $sheet->setAutoFilter('A1:D'.$i);
 $sheet->getColumnDimension('A')->setWidth(40);
 $sheet->getColumnDimension('B')->setWidth(15);
 $sheet->getColumnDimension('C')->setWidth(30);
 $sheet->getColumnDimension('D')->setWidth(15);
 
-$mysqli->close();
+
+#
+# Close database connection ----------------------------------------------------
+#
+require 'FinalizeDatabaseOperation.php';
 
 // Redirect output to a client s web browser (Xlsx)
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
