@@ -12,7 +12,7 @@ require 'PrepareDatabaseOperation.php';
 if (isset($_POST['findcompetence'])) {
 
    $preferredLabel = $_POST['preferredLabel'];
-   dbExecute("SELECT prefferredLabel as preferredLabel, altLabels, defaultSearchPatterns, overriddenSearchPatterns, grp, conceptUri, _id FROM kompetence WHERE prefferredLabel LIKE '".$preferredLabel."' limit 1");
+   dbExecute("SELECT prefferredLabel as preferredLabel, altLabels, defaultSearchPatterns, overriddenSearchPatterns, grp, conceptUri, _id as id FROM kompetence WHERE prefferredLabel LIKE '".$preferredLabel."' limit 1");
    $row = $GLOBALS["mysqliresult"]->fetch_array(MYSQLI_ASSOC);
    echo(json_encode($row));
 
@@ -28,8 +28,14 @@ if (isset($_POST['findcompetence'])) {
    $grp = $_POST['grp'];
    $conceptUri = $_POST['conceptUri'];
    $overriddenSearchPatterns = $_POST['overriddenSearchPatterns'];
+   $id = $_POST['id'];
 
    $query = "";
+   if (!empty($preferredLabel)) {
+      if (!empty($query))
+      	 $query .= ", ";
+      $query .= "prefferredLabel='".$preferredLabel."'";
+   }
    if (!empty($altLabels)) {
       if (!empty($query))
       	 $query .= ", ";
@@ -50,7 +56,12 @@ if (isset($_POST['findcompetence'])) {
       	 $query .= ", ";
       $query .= "overriddenSearchPatterns='".$overriddenSearchPatterns."'";
    }
-   $query = "UPDATE kompetence SET ".$query." WHERE prefferredLabel = '".$preferredLabel."'";
+   $query = "UPDATE kompetence SET ".$query;
+   if (!empty($id)) {
+      $query .= " WHERE _id = ".$id;
+   } else {
+      $query .= " WHERE prefferredLabel = '".$preferredLabel."'";
+   }
    dbExecute($query);
 
 } elseif (isset($_POST['deletecompetence'])) {
